@@ -1,4 +1,7 @@
 
+from quiz_data import create_default_quizzes
+
+
 def menu():
     print("\n================================")
     print("       Python 퀴즈 게임")
@@ -11,34 +14,65 @@ def menu():
     print("================================")
 
 
-def get_choice():
+def get_number(message, minimum, maximum):
     while True:
-        choice = input("선택: ").strip()
+        value = input(message).strip()
 
-        if choice == "":
+        if value == "":
             print("입력값이 없습니다. 다시 입력하세요.")
             continue
 
         try:
-            choice = int(choice)
+            value = int(value)
         except ValueError:
             print("숫자를 입력하세요.")
             continue
 
-        if 1 <= choice <= 5:
-            return choice
+        if minimum <= value <= maximum:
+            return value
 
-        print("1~5 사이의 숫자를 입력하세요.")
+        print(f"{minimum}~{maximum} 사이의 숫자를 입력하세요.")
+
+
+def play_quiz(quizzes):
+    if len(quizzes) == 0:
+        print("등록된 퀴즈가 없습니다.")
+        return
+
+    score = 0
+    print(f"\n퀴즈를 시작합니다! (총 {len(quizzes)}문제)")
+
+    for i in range(len(quizzes)):
+        print(f"\n[문제 {i + 1}]")
+        quizzes[i].show()
+
+        answer = get_number("정답 입력: ", 1, 4)
+
+        if quizzes[i].check_answer(answer):
+            print("정답입니다!")
+            score += 1
+        else:
+            print(f"오답입니다! 정답은 {quizzes[i].answer}번입니다.")
+
+    total = len(quizzes)
+    result = score / total * 100
+
+    print("\n================================")
+    print(f"결과: {total}문제 중 {score}문제 정답!")
+    print(f"점수: {result:.0f}점")
+    print("================================")
 
 
 def main():
+    quizzes = create_default_quizzes()
+
     try:
         while True:
             menu()
-            choice = get_choice()
+            choice = get_number("선택: ", 1, 5)
 
             if choice == 1:
-                print("퀴즈 풀기 (구현 예정)")
+                play_quiz(quizzes)
             elif choice == 2:
                 print("퀴즈 추가 (구현 예정)")
             elif choice == 3:
