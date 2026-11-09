@@ -2,6 +2,7 @@ from quiz import Quiz
 from quiz_data import create_default_quizzes
 import json
 import os
+from datetime import datetime
 from tempfile import NamedTemporaryFile
 from pathlib import Path
 
@@ -192,9 +193,9 @@ class QuizGame:
                     write_atomic(STATE_FILE.with_suffix(".json.bak"), previous)
             if previous != payload:
                 write_atomic(STATE_FILE, payload)
-            print("데이터가 저장되었습니다.")
+            print(f"[{datetime.now():%Y-%m-%d %H:%M:%S}] 데이터가 저장되었습니다.")
         except (OSError, TypeError, ValueError) as error:
-            print(f"데이터 저장 실패: {error}")
+            print(f"[{datetime.now():%Y-%m-%d %H:%M:%S}] 데이터 저장 실패: {error}")
 
     def load_state(self):
         try:
