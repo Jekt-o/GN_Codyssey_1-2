@@ -12,3 +12,5 @@ venv/
 
 # 임시 파일
 *.tmp
+/state.json.bak
+/state.json.damaged*

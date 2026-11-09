@@ -1,9 +1,61 @@
 from quiz import Quiz
 from quiz_data import create_default_quizzes
 import json
+import os
+from tempfile import NamedTemporaryFile
 from pathlib import Path
 
 STATE_FILE = Path(__file__).resolve().parent / "state.json"
+
+def write_atomic(path, payload):
+    temp = NamedTemporaryFile(dir=path.parent, delete=False)
+    temporary_path = Path(temp.name)
+    try:
+        with temp:
+            temp.write(payload)
+            temp.flush()
+            os.fsync(temp.fileno())
+        os.replace(temporary_path, path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
+def decode_state(payload):
+    data = json.loads(payload.decode("utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("잘못된 데이터 구조")
+
+    raw_quizzes = data["quizzes"]
+    best_score = data["best_score"]
+
+    if not isinstance(raw_quizzes, list):
+        raise ValueError("퀴즈 목록 형식 오류")
+
+    quizzes = []
+
+    for item in raw_quizzes:
+        question = item["question"]
+        choices = item["choices"]
+        answer = item["answer"]
+
+        if (not isinstance(question, str)
+            or not question.strip()
+            or not isinstance(choices, list)
+            or len(choices) != 4
+            or not all(isinstance(c, str) and c.strip() for c in choices)
+            or type(answer) is not int
+            or not 1 <= answer <= 4):
+            raise ValueError("퀴즈 데이터 형식 오류")
+
+        quizzes.append(Quiz(question, choices, answer))
+
+    if best_score is not None:
+        if (type(best_score) not in (int, float)
+            or not 0 <= best_score <= 100):
+            raise ValueError("최고 점수 형식 오류")
+
+    return quizzes, best_score
+
 
 def menu():
     print("\n================================")
@@ -125,48 +177,27 @@ class QuizGame:
             }
 
         try:
-            with open(STATE_FILE, "w", encoding="utf-8") as file:
-                json.dump(data, file, ensure_ascii=False, indent=4)
+            payload = json.dumps(data, ensure_ascii=False, indent=4).encode("utf-8")
+            try:
+                previous = STATE_FILE.read_bytes()
+            except FileNotFoundError:
+                previous = None
+            if previous is not None and previous != payload:
+                try:
+                    decode_state(previous)
+                except (ValueError, KeyError, TypeError, IndexError):
+                    pass  # 손상된 원본으로 정상 백업을 교체하지 않는다.
+                else:
+                    write_atomic(STATE_FILE.with_suffix(".json.bak"), previous)
+            if previous != payload:
+                write_atomic(STATE_FILE, payload)
             print("데이터가 저장되었습니다.")
         except (OSError, TypeError, ValueError) as error:
             print(f"데이터 저장 실패: {error}")
 
     def load_state(self):
         try:
-            with open(STATE_FILE, "r", encoding="utf-8") as file:
-                data = json.load(file)
-
-            if not isinstance(data, dict):
-                raise ValueError("잘못된 데이터 구조")
-
-            raw_quizzes = data["quizzes"]
-            best_score = data["best_score"]
-
-            if not isinstance(raw_quizzes, list):
-                raise ValueError("퀴즈 목록 형식 오류")
-
-            quizzes = []
-
-            for item in raw_quizzes:
-                question = item["question"]
-                choices = item["choices"]
-                answer = item["answer"]
-
-                if (not isinstance(question, str)
-                    or not question.strip()
-                    or not isinstance(choices, list)
-                    or len(choices) != 4
-                    or not all(isinstance(c, str) and c.strip() for c in choices)
-                    or not 1 <= answer <= 4):
-                    raise ValueError("퀴즈 데이터 형식 오류")
-
-                quizzes.append(Quiz(question, choices, answer))
-
-            if best_score is not None:
-                if (type(best_score) not in (int, float)
-                    or not 0 <= best_score <= 100):
-                    raise ValueError("최고 점수 형식 오류")
-
+            quizzes, best_score = decode_state(STATE_FILE.read_bytes())
             self.quizzes = quizzes
             self.best_score = best_score
             print(f"저장된 퀴즈 {len(quizzes)}개를 불러왔습니다.")
