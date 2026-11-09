@@ -99,34 +99,61 @@ def show_best_score(best_score):
         print(f"최고 점수: {best_score:.0f}점")
 
 
+class QuizGame:
+    def __init__(self):
+        self.quizzes = create_default_quizzes()
+        self.best_score = None
+
+    def show_menu(self):
+        menu()
+
+    def play(self):
+        score = play_quiz(self.quizzes)
+
+        if score is not None:
+            if self.best_score is None or score > self.best_score:
+                self.best_score = score
+                print("새로운 최고 점수입니다 !")
+
+    def add(self):
+        add_quiz(self.quizzes)
+
+    def list_quizzes(self):
+        show_quizzes(self.quizzes)
+
+    def show_score(self):
+        show_best_score(self.best_score)
+
+    def run(self):
+        try:
+            while True:
+                self.show_menu()
+                choice = get_number("선택: ", 1, 5)
+
+                if choice == 1:
+                    score = play_quiz(self.quizzes)
+
+                    if score is not None:
+                        if self.best_score is None or score > self.best_score:
+                            self.best_score = score
+                            print(f"새로운 최고 점수입니다 !")
+                elif choice == 2:
+                    self.add()
+                elif choice == 3:
+                    self.list_quizzes()
+                elif choice == 4:
+                    self.show_score()
+                elif choice == 5:
+                    print("프로그램을 종료합니다.")
+                    break
+
+        except (KeyboardInterrupt, EOFError):
+            print("\n입력이 중단되어 안전하게 종료합니다.")
+
+
 def main():
-    quizzes = create_default_quizzes()
-    best_score = None
-
-    try:
-        while True:
-            menu()
-            choice = get_number("선택: ", 1, 5)
-
-            if choice == 1:
-                score = play_quiz(quizzes)
-
-                if score is not None:
-                    if best_score is None or score > best_score:
-                        best_score = score
-                        print(f"새로운 최고 점수입니다 !")
-            elif choice == 2:
-                add_quiz(quizzes)
-            elif choice == 3:
-               show_quizzes(quizzes)
-            elif choice == 4:
-                print("점수 확인 (구현 예정)")
-            elif choice == 5:
-                print("프로그램을 종료합니다.")
-                break
-
-    except (KeyboardInterrupt, EOFError):
-        print("\n입력이 중단되어 안전하게 종료합니다.")
+    game = QuizGame()
+    game.run()
 
 
 if __name__ == "__main__":
