@@ -1,4 +1,4 @@
-
+from quiz import Quiz
 from quiz_data import create_default_quizzes
 
 
@@ -74,6 +74,22 @@ def show_quizzes(quizzes):
         print(f"{i + 1}. {quizzes[i].question}")
 
 
+def add_quiz(quizzes):
+    def read_text(prompt):
+        while True:
+            text = input(prompt).strip()
+            if text:
+                return text
+            print("입력값이 없습니다. 다시 입력하세요.")
+
+    question = read_text("문제: ")
+    choices = [read_text(f"선택지 {i}: ") for i in range(1, 5)]
+    answer = get_number("정답 번호 (1~4): ", 1, 4)
+
+    quizzes.append(Quiz(question, choices, answer))
+    print("퀴즈가 추가되었습니다 !")
+
+
 def main():
     quizzes = create_default_quizzes()
 
@@ -85,7 +101,7 @@ def main():
             if choice == 1:
                 play_quiz(quizzes)
             elif choice == 2:
-                print("퀴즈 추가 (구현 예정)")
+                add_quiz(quizzes)
             elif choice == 3:
                show_quizzes(quizzes)
             elif choice == 4:
