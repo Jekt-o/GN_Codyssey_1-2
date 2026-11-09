@@ -92,7 +92,7 @@ def add_quiz(quizzes):
     print("퀴즈가 추가되었습니다 !")
 
 
-def show_best_score(score):
+def show_best_score(best_score):
     if best_score is None:
         print("아직 퀴즈를 풀지 않았습니다.")
     else:
