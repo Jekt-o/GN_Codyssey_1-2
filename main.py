@@ -63,6 +63,17 @@ def play_quiz(quizzes):
     print("================================")
 
 
+def show_quizzes(quizzes):
+    if len(quizzes) == 0:
+        print("등록된 퀴즈가 없습니다.")
+        return
+
+    print(f"\n등록된 퀴즈 목록 (총 {len(quizzes)}개)")
+
+    for i in range(len(quizzes)):
+        print(f"{i + 1}. {quizzes[i].question}")
+
+
 def main():
     quizzes = create_default_quizzes()
 
@@ -76,7 +87,7 @@ def main():
             elif choice == 2:
                 print("퀴즈 추가 (구현 예정)")
             elif choice == 3:
-                print("퀴즈 목록 (구현 예정)")
+               show_quizzes(quizzes)
             elif choice == 4:
                 print("점수 확인 (구현 예정)")
             elif choice == 5:
