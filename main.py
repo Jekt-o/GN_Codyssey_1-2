@@ -62,6 +62,8 @@ def play_quiz(quizzes):
     print(f"점수: {result:.0f}점")
     print("================================")
 
+    return result
+
 
 def show_quizzes(quizzes):
     if len(quizzes) == 0:
@@ -90,8 +92,16 @@ def add_quiz(quizzes):
     print("퀴즈가 추가되었습니다 !")
 
 
+def show_best_score(score):
+    if best_score is None:
+        print("아직 퀴즈를 풀지 않았습니다.")
+    else:
+        print(f"최고 점수: {best_score:.0f}점")
+
+
 def main():
     quizzes = create_default_quizzes()
+    best_score = None
 
     try:
         while True:
@@ -99,7 +109,12 @@ def main():
             choice = get_number("선택: ", 1, 5)
 
             if choice == 1:
-                play_quiz(quizzes)
+                score = play_quiz(quizzes)
+
+                if score is not None:
+                    if best_score is None or score > best_score:
+                        best_score = score
+                        print(f"새로운 최고 점수입니다 !")
             elif choice == 2:
                 add_quiz(quizzes)
             elif choice == 3:
