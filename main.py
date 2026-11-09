@@ -208,12 +208,7 @@ class QuizGame:
                 choice = get_number("선택: ", 1, 5)
 
                 if choice == 1:
-                    score = play_quiz(self.quizzes)
-
-                    if score is not None:
-                        if self.best_score is None or score > self.best_score:
-                            self.best_score = score
-                            print(f"새로운 최고 점수입니다 !")
+                    self.play()
                 elif choice == 2:
                     self.add()
                 elif choice == 3:
