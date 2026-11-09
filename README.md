@@ -220,7 +220,7 @@ Python 3.12.10에서 코드 버전 `ac97382`와 저장 데이터를 임시 폴�
 
 ### 실행 화면과 Git 실습 기록
 
-아래 환경·게임 화면 및 복제 실습 PNG는 2026-11-09 Windows 검증 콘솔의 **실제 화면 버퍼 문자 출력을 읽어 이미지로 렌더링한 자료**입니다. 게임 화면은 배포 데이터를 복사한 폴더에서 게임 메서드에 예시 입력을 전달해 얻었습니다. 메뉴 2에서 7번째 문제를 추가하고 모두 맞힌 뒤 새 게임 객체가 파일을 읽어 7문제·100점을 표시하는 순서입니다.
+아래 환경·게임 화면 PNG는 2026-11-09 Windows 검증 콘솔의 **실제 화면 버퍼 문자 출력을 읽어 이미지로 렌더링한 자료**입니다. 게임 화면은 배포 데이터를 복사한 폴더에서 게임 메서드에 예시 입력을 전달해 얻었습니다. 메뉴 2에서 7번째 문제를 추가하고 모두 맞힌 뒤 새 게임 객체가 파일을 읽어 7문제·100점을 표시하는 순서입니다.
 
 | 검증 환경 | 메뉴 | 문제 추가 |
 |---|---|---|
@@ -234,8 +234,16 @@ WSL 개발 폴더에서 `git --no-pager log --oneline --graph -12 8e1a996`을 �
 
 ![WSL 터미널에서 확인한 풀이 브랜치 병합](docs/screenshots/quiz-play-merge.png)
 
-**복제와 동기화 실습.** Windows의 별도 폴더에 원격 저장소를 clone한 시점은 `92f41d8`입니다. 이 복제본에서 주제 선정 이유·커밋 규칙을 README에 작성하고 `9cb5c63`으로 commit한 뒤 GitHub main에 push했습니다. 기존 WSL 개발 폴더에는 커밋하지 않은 변경이 있어, 같은 저장소에 연결된 별도 worktree(`/tmp/quiz-pull-20261109`)에서 `git pull --ff-only origin main`을 수행했습니다. 해당 작업 트리는 `ac97382`에서 `9cb5c63`으로 fast-forward했고, README에 새 절 ‘커밋 단위와 메시지 규칙’이 생긴 것을 확인했습니다. 동기화 직후 양쪽의 `git rev-parse HEAD` 결과는 **`9cb5c639c83ae102e873cdee848d89373b6da2bb`**였습니다.
+### WSL에서 직접 수행한 clone·push·pull 실습
 
-![복제본의 clone·commit·push 기록](docs/screenshots/clone-push.png)
+1. GitHub 저장소를 별도 폴더 `~/GN_Codyssey_1-2-practice`에 복제했습니다. 복제 직후 커밋은 `1d3b615`였습니다.
 
-![WSL의 pull 기록과 양쪽 커밋 ID](docs/screenshots/pull.png)
+   ![복제 명령과 복제 직후 커밋](docs/screenshots/wsl-clone.png)
+
+2. 복제본에 첫 번째 캡처를 추가한 뒤 커밋하고 `git push origin main`을 실행했습니다. 원격 main이 `1d3b615`에서 `a75dfad`로 갱신됐습니다.
+
+   ![복제본에서 증빙 파일을 커밋하고 push한 결과](docs/screenshots/wsl-push.png)
+
+3. 기존 작업 폴더 `~/GN_Codyssey_1-2`에서 `git pull --ff-only origin main`을 실행했습니다. 기존 폴더가 `ac97382`에서 `a75dfad`로 fast-forward됐습니다. 두 폴더의 커밋 ID가 일치했고 기존 폴더에서 새 파일 `docs/screenshots/wsl-clone.png`도 확인했습니다.
+
+   ![기존 폴더의 pull 결과와 두 폴더의 커밋 ID 및 새 파일 확인](docs/screenshots/wsl-pull.png)
