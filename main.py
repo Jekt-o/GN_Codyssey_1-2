@@ -70,23 +70,24 @@ def menu():
 
 
 def get_number(message, minimum, maximum):
+    range_hint = f"{minimum}~{maximum} 사이의 정수를 입력하세요."
     while True:
         value = input(message).strip()
 
         if value == "":
-            print("입력값이 없습니다. 다시 입력하세요.")
+            print(f"입력값이 없습니다. {range_hint}")
             continue
 
         try:
             value = int(value)
         except ValueError:
-            print("숫자를 입력하세요.")
+            print(f"정수로 읽을 수 없습니다. {range_hint}")
             continue
 
         if minimum <= value <= maximum:
             return value
 
-        print(f"{minimum}~{maximum} 사이의 숫자를 입력하세요.")
+        print(f"입력 범위를 벗어났습니다. {range_hint}")
 
 
 def play_quiz(quizzes):
