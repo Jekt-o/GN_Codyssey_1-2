@@ -249,11 +249,13 @@ class QuizGame:
                 elif choice == 4:
                     self.show_score()
                 elif choice == 5:
-                    print("프로그램을 종료합니다.")
+                    print(f"[{datetime.now():%Y-%m-%d %H:%M:%S}] 종료 사유: 메뉴에서 종료 선택")
                     break
 
-        except (KeyboardInterrupt, EOFError):
-            print("\n입력이 중단되어 안전하게 종료합니다.")
+        except KeyboardInterrupt:
+            print(f"\n[{datetime.now():%Y-%m-%d %H:%M:%S}] 종료 사유: Ctrl+C 입력")
+        except EOFError:
+            print(f"\n[{datetime.now():%Y-%m-%d %H:%M:%S}] 종료 사유: 입력 스트림 종료(EOF)")
 
         finally:
             self.save_state()
