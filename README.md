@@ -260,6 +260,95 @@ WSL 개발 폴더에서 `git --no-pager log --oneline --graph -12 8e1a996`을 �
 
    ![기존 폴더의 pull 결과와 두 폴더의 커밋 ID 및 새 파일 확인](docs/screenshots/wsl-pull.png)
 
+
+### 7-1. AI 사전평가 보완 및 증빙 바로가기
+
+> **대상 평가:** 2026-11-09 19:25:33 · 83%(15/18) · FAIL #5, #6, #7  
+> **보완 방향:** 기존 구현을 바꾸지 않고, 실제 원격 커밋·브랜치 병합·WSL 작업 캡처를 평가 항목에 직접 연결합니다.  
+> **주의:** 이 표는 GitHub에 존재하는 증빙 자료를 쉽게 찾아보도록 정리한 것이며 재평가의 합격 판정을 미리 보장하지 않습니다.
+
+#### ① FAIL 3개 항목: 제출 증빙 색인
+
+| 평가 항목 | 실제 GitHub 증빙 | 평가자가 확인할 내용 |
+|---|---|---|
+| **#5. Git 커밋 10개 이상** | [원격 `main` 커밋 목록](https://github.com/Jekt-o/GN_Codyssey_1-2/commits/main/) · [원격 커밋 35개 조회 스냅샷](evidence/logs/github-main-commits.txt) · [Git 그래프 캡처](docs/screenshots/git-graph.png) | `Feat`, `Fix`, `Refactor`, `Docs` 등 기능별 기록이 10개 이상인지 확인. 스냅샷은 2026-11-10 수집 시점의 35개를 기록하므로 이후 커밋은 목록 페이지에서 확인합니다. |
+| **#6. 브랜치 생성 및 병합** | [실제 병합 그래프 캡처](docs/screenshots/quiz-play-merge.png) · [병합 커밋 `8e1a996`](https://github.com/Jekt-o/GN_Codyssey_1-2/commit/8e1a996b7894c19356e5ba48e2cb3e71ec1af667) · [기능 브랜치의 풀이 커밋 `f8a6bc1`](https://github.com/Jekt-o/GN_Codyssey_1-2/commit/f8a6bc18ce348426684b08bbe18e7ff40371ded5) | 병합 커밋의 부모가 `main` 쪽 `8aa62d9`와 기능 작업 `f8a6bc1` **2개**라는 점 확인. |
+| **#7. clone / push / pull 실습** | [WSL clone](docs/screenshots/wsl-clone.png) · [WSL push](docs/screenshots/wsl-push.png) · [WSL pull](docs/screenshots/wsl-pull.png) | 별도 폴더에 복제 → 해당 복제본에서 push → 기존 작업 폴더에서 pull한 터미널 기록을 순서대로 확인. |
+
+**직접 검증할 때 사용하는 Git 명령어:**
+
+```bash
+git log --oneline --graph --all
+git rev-list --count main
+git show --no-patch --pretty=raw 8e1a996
+```
+
+상단의 원격 커밋 스냅샷은 **GitHub REST API의 실제 `main` 기록**으로부터 작성한 것입니다. 실제 WSL 터미널의 `git log` 출력과 혼동하지 않도록 출처를 파일에 명시했습니다. 터미널 화면은 별도의 Git 그래프 스크린샷으로 확인할 수 있습니다.
+
+#### ② PASS 항목의 추가 증빙 연결
+
+| 평가 항목 | 관련 자료와 보충 설명 |
+|---|---|
+| #1 메뉴와 실행 | [WSL 메뉴 화면](docs/screenshots/menu.png) · [`main.py`](main.py)의 `menu()`, `main()`, `QuizGame.run()` |
+| #2 입력 및 채점 | [퀴즈 풀이 화면](docs/screenshots/play.png) · `get_number()`(빈 입력·문자·범위 검사), `Quiz.check_answer()`(정답 비교). **오답 및 잘못된 입력 전용 화면**은 현재 별도 증빙으로 확인하지 않았으므로 추가 캡처 시 보완 가능합니다. |
+| #3 퀴즈와 최고 점수 보존 | [등록 목록](docs/screenshots/list.png) · [재실행 후 점수 확인](docs/screenshots/score.png) · [`state.json`](state.json) |
+| #4 기본 퀴즈 수 | [`quiz_data.py`의 `create_default_quizzes()`](quiz_data.py)는 **기본 문제 5개**를 생성합니다. 배포용 [`state.json`](state.json)에 사용자 추가 문제가 있으면 메뉴에는 6개 이상 표시될 수 있습니다. **기본 데이터와 저장된 데이터의 차이**입니다. |
+| #10 데이터 저장·불러오기 | [`QuizGame.load_state()` / `save_state()`](main.py) · [풀이·저장 성공 캡처](docs/screenshots/play.png) · [재시작 후 불러오기](docs/screenshots/score.png). 현재 저장 성공 메시지에는 시각이 출력되지만 불러오기 메시지 자체에는 시각이 포함되지 않습니다. |
+| #12 커밋 규칙 | [실제 커밋 목록](https://github.com/Jekt-o/GN_Codyssey_1-2/commits/main/) · [보관된 커밋 목록](evidence/logs/github-main-commits.txt). 기능 커밋뿐 아니라 초기 커밋·병합 커밋도 있으므로 메시지 유형이 전부 `Feat`인 것은 아닙니다. |
+| #17 백업·복구 | 위 **4장 '이전 퀴즈와 점수 복원하기'**의 실행 명령 및 검증 설명 참고. 복구 출력만을 보여 주는 별도 스크린샷은 현재 확인되지 않았습니다. |
+
+#### ③ 코드 책임 분리와 변경 영향 범위 (#8, #9, #13, #18)
+
+이 프로그램은 **한 문제의 정보와 채점**을 `Quiz`가 담당하고, **한 판의 진행·최고 기록·저장**을 `QuizGame`이 담당합니다. 관련 함수 위치는 아래와 같습니다.
+
+| 바꾸고 싶은 기능 | 수정 대상 | 영향을 함께 확인할 부분 |
+|---|---|---|
+| 문제 질문·선택지·정답 구조 | [`quiz.py`](quiz.py)의 `Quiz.__init__()`, `show()`, `check_answer()` | `quiz_data.py`, `add_quiz()`, `decode_state()`, `save_state()`의 JSON 필드 |
+| 문제 순서 / 랜덤 출제 | [`main.py`](main.py)의 `play_quiz()` | `QuizGame.play()`을 통해 호출되는지, 문제 중복·누락이 없는지 |
+| 점수 계산 방식 | `play_quiz()`의 `result` 계산 | `QuizGame.play()`의 최고 기록 비교, `show_best_score()`의 화면 표시 |
+| 메뉴나 입력 범위 | `menu()`, `get_number()`, `QuizGame.run()` | 메뉴 분기 및 정답 입력 처리 |
+| 파일 형식과 저장 정책 | `decode_state()`, `QuizGame.load_state()`, `QuizGame.save_state()`, `write_atomic()` | `state.json`, 정상/손상 파일 복원, 백업 형식 |
+
+`Quiz` 클래스는 다른 문제에도 그대로 재사용할 수 있습니다. 예를 들어 다음 코드는 파일을 변경하지 않고 독립적으로 객체를 만들어 정답 판별을 확인합니다.
+
+```python
+from quiz import Quiz
+
+sample = Quiz('1 + 1 = ?', ['1', '2', '3', '4'], 2)
+print(sample.check_answer(2))  # True
+print(sample.check_answer(1))  # False
+```
+
+#### ④ 저장 방식과 운영 환경의 한계 (#11, #14, #15, #16)
+
+| 비교 | 현재 JSON | 대안인 SQLite |
+|---|---|---|
+| 장점 | 사람이 파일을 열어 문제·점수를 바로 읽을 수 있고, 추가 설치 없이 구현이 단순함 | 많은 데이터의 검색·수정·트랜잭션 처리에 유리함 |
+| 주의점 | 문제 하나가 바뀌어도 목록 전체를 다시 기록함. 동시 수정에 취약함 | 데이터베이스와 SQL을 학습하고 테이블 구조를 관리해야 함 |
+| 선택 이유 | 소규모 터미널 퀴즈 게임에는 JSON으로도 요구사항을 충족함 | 문제 수와 기능이 커지면 고려할 확장 방향 |
+
+**정상 종료와 시그널:** 현재 프로그램은 메뉴 5, `Ctrl+C`(KeyboardInterrupt), 입력 스트림 종료(EOFError)를 처리해 `finally`에서 저장을 시도합니다. **SIGTERM/SIGKILL 등 모든 종료 상황에서 저장이 보장되는 것은 아닙니다.** 서비스 운영으로 확장한다면 SIGTERM 핸들러, 처리 중인 데이터의 안전한 종료, 비정상 종료 복구 테스트를 추가해야 합니다. SIGKILL은 프로그램이 처리할 수 없습니다.
+
+**파일 쓰기 권한 오류 시 점검 (Ubuntu/WSL):**
+
+```bash
+ls -l state.json
+ls -ld .
+df -h .
+```
+
+소유자와 쓰기 권한을 확인한 후, *사용자 소유 파일인데 소유자 쓰기 권한만 빠진 경우* `chmod u+w state.json`으로 보완할 수 있습니다. 저장은 임시 파일 생성과 교체를 사용하므로 **프로젝트 폴더의 쓰기 권한**도 필요합니다. `chmod 777` 같은 무분별한 권한 변경은 권장하지 않습니다.
+
+**성능 측정 해석:** 4장에 기록한 1,000문제 측정값(1.41ms, 1.17MiB)은 명시된 Windows·Python 3.12.10 환경의 과거 측정 결과입니다. **측정 스크립트와 원시 반복 측정값은 현재 제출물에서 확인되지 않았으므로 재현 가능성이 제한**됩니다. 이후 성능 지표를 평가 근거로 사용할 때는 측정 스크립트, `time.perf_counter()`의 회차별 원시 결과, `tracemalloc` 측정값, Python 버전을 별도 파일로 함께 보관해야 합니다.
+
+#### ⑤ 평가자에게 권장하는 확인 순서
+
+1. [실제 커밋 목록](https://github.com/Jekt-o/GN_Codyssey_1-2/commits/main/)과 [커밋 스냅샷](evidence/logs/github-main-commits.txt)으로 10개 이상 커밋 확인
+2. [병합 그래프](docs/screenshots/quiz-play-merge.png)와 [병합 커밋](https://github.com/Jekt-o/GN_Codyssey_1-2/commit/8e1a996b7894c19356e5ba48e2cb3e71ec1af667)으로 기능 브랜치 통합 확인
+3. [clone](docs/screenshots/wsl-clone.png) → [push](docs/screenshots/wsl-push.png) → [pull](docs/screenshots/wsl-pull.png) 순서로 실습 검증
+4. [메뉴](docs/screenshots/menu.png) → [목록](docs/screenshots/list.png) → [채점](docs/screenshots/play.png) → [재실행 후 최고 점수](docs/screenshots/score.png) 확인
+5. 아래 8장에서 보너스 기능 **랜덤 출제**의 구현과 검증 결과 확인
+
 ---
 
 ## 8. 보너스 과제 (선택) — 랜덤 출제
